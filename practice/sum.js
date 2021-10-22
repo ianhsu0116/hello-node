@@ -8,4 +8,4 @@ function sum(param) {
   console.log(ans);
 }
 
-sum(150);
+sum(1500);
