@@ -1,34 +1,67 @@
+import React, { useState, useEffect } from "react";
+import { withRouter, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import EditBtn from "./buttons/EditBtn";
 import DeleteBtn from "./buttons/DeleteBtn";
+import axios from "axios";
+import { STATUS_WORD, STATUS_COLOR } from "../config/status";
 
-const TodoList = () => {
+const TodoList = (props) => {
+  const [initRender, setInitRender] = useState(true);
+  const [item, setItem] = useState([{}]);
+  const [updator, setUpdator] = useState([{}]);
+
+  // 以下兩種方法都可以拿到網址列後方 /:todoId 的值
+  // let { todoId } = props.match.params;
+  let { todoId } = useParams();
+
+  // 拿到初始資料
+  useEffect(async () => {
+    // 拿到 todo detail 資料
+    let res = await axios.get(`http://localhost:3502/api/todos/${todoId}`);
+    setItem(res.data);
+    console.log(res.data);
+
+    // 拿到 updator 資料
+    let updatorId = res.data.updator_id;
+    let updator = await axios.get(
+      `http://localhost:3502/api/member/${updatorId}`
+    );
+    setUpdator(updator.data);
+  }, []);
+
   return (
     <>
       <div className="column is-three-fifths">
-        <article className="panel">
-          <p className="panel-heading">TODO: 標題</p>
-          <div className="card-image">
-            <figure className="image is-4by3">
-              <img src="#" alt="Placeholder image" />
-            </figure>
-          </div>
-          <div className="panel-block">TODO: 內容</div>
-          <ul>
-            <li className="panel-block">到期日: TODO: 到期日</li>
-            <li className="panel-block">ＸＸＸ 於 YYYY-MM-DD 建立</li>
-            <li className="panel-block">ＯＯＯ 於 YYYY-MM-DD 更新</li>
-          </ul>
-          <footer className="card-footer">
-            <a href="#" className="card-footer-item">
-              <FontAwesomeIcon icon={faCheck} className="mr-2" />
-              Done
-            </a>
-            <EditBtn />
-            <DeleteBtn />
-          </footer>
-        </article>
+        {item && (
+          <article className="panel">
+            <p className="panel-heading">TODO: {item.title}</p>
+            <div className="card-image">
+              <figure className="image is-4by3">
+                <img src="#" alt="Placeholder image" />
+              </figure>
+            </div>
+            <div className="panel-block">TODO: {item.content}</div>
+            <ul>
+              <li className="panel-block">到期日: {item.deadline}</li>
+              <li className="panel-block">
+                {item.name} 於： {item.created_at} 建立
+              </li>
+              <li className="panel-block">
+                {updator.name} 於 {item.updated_at} 更新
+              </li>
+            </ul>
+            <footer className="card-footer">
+              <a href="#" className="card-footer-item">
+                <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                Done
+              </a>
+              <EditBtn />
+              <DeleteBtn />
+            </footer>
+          </article>
+        )}
       </div>
       <div className="column is-two-fifths">
         <article className="panel is-link">
@@ -47,4 +80,4 @@ const TodoList = () => {
   );
 };
 
-export default TodoList;
+export default withRouter(TodoList);

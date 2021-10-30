@@ -1,10 +1,57 @@
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import EditBtn from "./buttons/EditBtn";
 import ShowBtn from "./buttons/ShowBtn";
 import DeleteBtn from "./buttons/DeleteBtn";
+import axios from "axios";
+import { STATUS_WORD, STATUS_COLOR } from "../config/status";
 
 const TodoList = () => {
+  const [todos, setTodos] = useState([{}, {}, {}]);
+
+  // 當需要用到一堆ifElse時，可以用查表法
+  // const STATUS_WORD = {
+  //   A: "進行中",
+  //   B: "已完成",
+  //   C: "已暫停",
+  // };
+
+  // const STATUS_COLOR = {
+  //   A: "is-info",
+  //   B: "is-success",
+  //   C: "is-danger",
+  // };
+
+  // 拿到初始資料
+  useEffect(async () => {
+    let res = await axios.get(`http://localhost:3502/api/todos`);
+    setTodos(res.data);
+  }, []);
+
+  let result = [];
+  result = todos.map((item) => {
+    return (
+      <section className={"message" + STATUS_COLOR[item.status]}>
+        <header className="message-header">
+          <p>
+            TODO: {STATUS_WORD[item.status]} {item.title}
+          </p>
+        </header>
+        <div className="message-body">{item.content}</div>
+        <footer className="card-footer">
+          <ShowBtn todoId={item.id} />
+          <a href="#" className="card-footer-item">
+            <FontAwesomeIcon icon={faCheck} className="mr-2" />
+            Done
+          </a>
+          <EditBtn todoId={item.id} />
+          <DeleteBtn todoId={item.id} />
+        </footer>
+      </section>
+    );
+  });
+
   return (
     <div className="column is-three-fifths">
       <nav
@@ -24,21 +71,28 @@ const TodoList = () => {
         </div>
       </div>
       TODO: 列表
-      <section className="message">
-        <header className="message-header">
-          <p>TODO: 標題</p>
-        </header>
-        <div className="message-body"></div>
-        <footer className="card-footer">
-          <ShowBtn />
-          <a href="#" className="card-footer-item">
-            <FontAwesomeIcon icon={faCheck} className="mr-2" />
-            Done
-          </a>
-          <EditBtn />
-          <DeleteBtn />
-        </footer>
-      </section>
+      {todos &&
+        todos.map((item) => {
+          return (
+            <section className={"message" + STATUS_COLOR[item.status]}>
+              <header className="message-header">
+                <p>
+                  TODO: {STATUS_WORD[item.status]} {item.title}
+                </p>
+              </header>
+              <div className="message-body">{item.content}</div>
+              <footer className="card-footer">
+                <ShowBtn todoId={item.id} />
+                <a href="#" className="card-footer-item">
+                  <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                  Done
+                </a>
+                <EditBtn todoId={item.id} />
+                <DeleteBtn todoId={item.id} />
+              </footer>
+            </section>
+          );
+        })}
     </div>
   );
 };
