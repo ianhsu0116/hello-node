@@ -6,6 +6,7 @@ import EditBtn from "./buttons/EditBtn";
 import DeleteBtn from "./buttons/DeleteBtn";
 import axios from "axios";
 import { STATUS_WORD, STATUS_COLOR } from "../config/status";
+import { API_URL } from "../config/config";
 
 const TodoList = (props) => {
   const [initRender, setInitRender] = useState(true);
@@ -19,7 +20,7 @@ const TodoList = (props) => {
   // 拿到初始資料
   useEffect(async () => {
     // 拿到 todo detail 資料
-    let res = await axios.get(`http://localhost:3502/api/todos/${todoId}`);
+    let res = await axios.get(`${API_URL}/todos/${todoId}`);
     setItem(res.data);
     console.log(res.data);
 

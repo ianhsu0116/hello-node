@@ -1,7 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "react-router";
 
 const TodoForm = () => {
+  let pathname = useParams();
+  console.log(pathname);
   return (
     <div className="column is-three-fifths">
       <form className="box">

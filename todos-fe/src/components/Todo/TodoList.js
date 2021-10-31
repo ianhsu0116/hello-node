@@ -6,6 +6,7 @@ import ShowBtn from "./buttons/ShowBtn";
 import DeleteBtn from "./buttons/DeleteBtn";
 import axios from "axios";
 import { STATUS_WORD, STATUS_COLOR } from "../config/status";
+import { API_URL } from "../config/config";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([{}, {}, {}]);
@@ -25,32 +26,9 @@ const TodoList = () => {
 
   // 拿到初始資料
   useEffect(async () => {
-    let res = await axios.get(`http://localhost:3502/api/todos`);
+    let res = await axios.get(`${API_URL}/todos`);
     setTodos(res.data);
   }, []);
-
-  let result = [];
-  result = todos.map((item) => {
-    return (
-      <section className={"message" + STATUS_COLOR[item.status]}>
-        <header className="message-header">
-          <p>
-            TODO: {STATUS_WORD[item.status]} {item.title}
-          </p>
-        </header>
-        <div className="message-body">{item.content}</div>
-        <footer className="card-footer">
-          <ShowBtn todoId={item.id} />
-          <a href="#" className="card-footer-item">
-            <FontAwesomeIcon icon={faCheck} className="mr-2" />
-            Done
-          </a>
-          <EditBtn todoId={item.id} />
-          <DeleteBtn todoId={item.id} />
-        </footer>
-      </section>
-    );
-  });
 
   return (
     <div className="column is-three-fifths">
@@ -74,7 +52,7 @@ const TodoList = () => {
       {todos &&
         todos.map((item) => {
           return (
-            <section className={"message" + STATUS_COLOR[item.status]}>
+            <section className={"message " + STATUS_COLOR[item.status]}>
               <header className="message-header">
                 <p>
                   TODO: {STATUS_WORD[item.status]} {item.title}
